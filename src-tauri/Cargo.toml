@@ -22,6 +22,10 @@ tauri = { version = "2", features = [] }
 tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "ansi"] }
+chrono = "0.4"
+colored = "2"
 windows = { version = "0.52", features = [
     "Win32_System_Registry",
     "Win32_UI_WindowsAndMessaging",

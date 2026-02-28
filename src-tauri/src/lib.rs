@@ -7,7 +7,8 @@ use windows::Win32::UI::WindowsAndMessaging::{
 };
 
 use tauri::Manager;
-
+mod logger;
+use logger::Logger;
 use std::fs;
 
 /** SPIF_SENDCHANGE,
@@ -30,7 +31,6 @@ impl MouseInfo {
     pub fn load() -> Self {
         Self {
             speed: Self::get_speed(),
-            // accel_enabled: Self::get_accel(),
         }
     }
 
@@ -43,7 +43,7 @@ impl MouseInfo {
                 Some(&mut speed as *mut _ as _),
                 SYSTEM_PARAMETERS_INFO_UPDATE_FLAGS(0),
             );
-            speed /*return*/
+            speed
         }
     }
 
@@ -170,7 +170,7 @@ fn set_mouse_speed(speed: u32) -> bool {
 
 #[tauri::command]
 fn save_mouse_state(app: tauri::AppHandle) -> bool {
-    println!("SAVE CALLED");
+    Logger::debug("LIB", "Function save_mouse_state called.");
 
     let info = MouseInfo::load();
 
@@ -186,27 +186,27 @@ fn save_mouse_state(app: tauri::AppHandle) -> bool {
 
     match fs::write("mouse_state.json", json) {
         Ok(_) => {
-            println!("SAVE SUCCESS");
+            Logger::info("LIB", "Saved mouse state");
             true
         }
         Err(e) => {
-            println!("SAVE ERROR: {:?}", e);
+            Logger::error("LIB", "Failed to save mouse state.");
             false
+        }
     }
-}
 }
 
 #[tauri::command]
 fn apply_mouse_state() -> bool {
-    println!("APPLY CALLED");
+    Logger::debug("LIB", "Applying mouse state");
 
     let content = match std::fs::read_to_string("mouse_state.json") {
         Ok(c) => {
-            println!("READ SUCCESS: {}", c);
+            Logger::info("LIB", "Loaded save file");
             c
         }
         Err(e) => {
-            println!("READ ERROR: {:?}", e);
+            Logger::error("LIB", "Failed to load save file");
             return false;
         }
     };
