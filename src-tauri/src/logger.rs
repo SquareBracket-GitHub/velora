@@ -22,20 +22,20 @@ pub fn init_logger() {
 pub struct Logger;
 
 impl Logger {
-    pub fn info(scope: &str, message: &str) {
-        tracing::info!(scope = scope, "{message}");
+    pub fn info(scope: &str, message: impl std::fmt::Display) {
+        tracing::info!(scope = scope, message = %message);
     }
 
-    pub fn warn(scope: &str, message: &str) {
-        tracing::warn!(scope = scope, "{message}");
+    pub fn warn(scope: &str, message: impl std::fmt::Display) {
+        tracing::warn!(scope = scope, message = %message);
     }
 
-    pub fn error(scope: &str, message: &str) {
-        tracing::error!(scope = scope, "{message}");
+    pub fn error(scope: &str, message: impl std::fmt::Display) {
+        tracing::error!(scope = scope, message = %message);
     }
 
-    pub fn debug(scope: &str, message: &str) {
-        tracing::debug!(scope = scope, "{message}");
+    pub fn debug(scope: &str, message: impl std::fmt::Display) {
+        tracing::debug!(scope = scope, message = %message);
     }
 }
 

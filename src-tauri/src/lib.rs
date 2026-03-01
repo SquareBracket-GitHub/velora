@@ -170,7 +170,7 @@ fn set_mouse_speed(speed: u32) -> bool {
 
 #[tauri::command]
 fn save_mouse_state(app: tauri::AppHandle) -> bool {
-    Logger::debug("LIB", "Function save_mouse_state called.");
+    Logger::debug("LIB", "Saving mouse state.");
 
     let info = MouseInfo::load();
 
@@ -184,9 +184,9 @@ fn save_mouse_state(app: tauri::AppHandle) -> bool {
         Err(_) => return false,
     };
 
-    match fs::write("mouse_state.json", json) {
+    match fs::write(&file_path, json) {
         Ok(_) => {
-            Logger::info("LIB", "Saved mouse state");
+            Logger::info("LIB", format!("Saved mouse state (path={})", file_path.display()));
             true
         }
         Err(e) => {
@@ -197,10 +197,15 @@ fn save_mouse_state(app: tauri::AppHandle) -> bool {
 }
 
 #[tauri::command]
-fn apply_mouse_state() -> bool {
+fn apply_mouse_state(app: tauri::AppHandle) -> bool {
     Logger::debug("LIB", "Applying mouse state");
 
-    let content = match std::fs::read_to_string("mouse_state.json") {
+    let app_dir = app.path().app_data_dir().unwrap();
+    std::fs::create_dir_all(&app_dir).ok();
+
+    let file_path = app_dir.join("mouse_state.json");
+
+    let content = match std::fs::read_to_string(file_path) {
         Ok(c) => {
             Logger::info("LIB", "Loaded save file");
             c
